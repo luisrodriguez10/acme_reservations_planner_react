@@ -16,6 +16,10 @@ const deleteReservation = (reservationId) =>{
     return axios.delete(`/api/reservations/${reservationId}`);
 }
 
+const deleteUser = (user) =>{
+  return axios.delete(`/api/users/${user.id}`);
+}
+
 const createReservation = async({userId, restaurantId}) => {
     const response = await axios.post(`/api/users/${userId}/reservations`, {
         restaurantId,
@@ -28,11 +32,12 @@ const createUser = async(user) =>{
     return response.data
 }
 
-module.exports = {
+export {
     fetchUsers,
     fetchRestaurants,
     fetchReservations,
     deleteReservation,
     createReservation,
-    createUser
+    createUser,
+    deleteUser
 }

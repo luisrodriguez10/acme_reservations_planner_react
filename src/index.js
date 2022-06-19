@@ -1,55 +1,94 @@
-const api = require("./api");
-const state = {};
-const restaurantsList = document.querySelector("#restaurants-list");
-const usersList = document.querySelector("#users-list");
-const reservationsList = document.querySelector("#reservations-list");
-const form = document.querySelector("form");
+import React from "react";
+import ReactDOM from "react-dom";
+import Users from "./Components/Users";
+import Restaurants from "./Components/Restaurants";
+import Header from "./Components/Header";
+import { fetchUsers, fetchRestaurants, createUser, deleteUser } from "./api";
 
-const fetchUsers = async () => {
-  const response = await api.fetchUsers();
-  state.users = response.data;
-};
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      users: [],
+      restaurants: [],
+    };
+    this.createAUser = this.createAUser.bind(this);
+    this.deleteAUser = this.deleteAUser.bind(this);
+  }
 
-const fetchRestaurants = async () => {
-  const response = await api.fetchRestaurants();
-  state.restaurants = response.data;
-};
+  async componentDidMount() {
+    let response = await fetchUsers();
+    this.setState({ users: response.data });
+    response = await fetchRestaurants();
+    this.setState({ restaurants: response.data });
+  }
 
-const renderUsers = () => {
-  const id = window.location.hash.slice(1) * 1;
-  const html = state.users
-    .map((user) => {
-      return `
-            <li>
-                <a href='#${user.id}'>
-                    ${user.name}
-                </a>
-            </li>
-        `;
-    })
-    .join("");
-  usersList.innerHTML = html;
-};
+  async createAUser() {
+    const user = await createUser({ name: Math.random() });
+    const users = [...this.state.users, user];
+    this.setState({ users });
+  }
 
-const renderRestaurants = () => {
-  const html = state.restaurants
-    .map((restaurant) => {
-      return `
-              <li>
-                  ${restaurant.name}
-              </li>
-          `;
-    })
-    .join("");
-  restaurantsList.innerHTML = html;
-};
+  async deleteAUser(user) {
+    await deleteUser(user);
+    const users = this.state.users.filter((_user) => _user.id !== user.id);
+    this.setState({ users });
+  }
+  render() {
+    const { users, restaurants } = this.state;
+    const { createAUser, deleteAUser } = this;
+    return (
+      <div>
+        <Header />
 
-const start = async () => {
-  console.log("hello");
-  await fetchUsers();
-  await fetchRestaurants();
-  renderUsers();
-  renderRestaurants();
-};
+        <main>
+          <section>
+            <h2>Users ({users.length})</h2>
+            <button onClick={createAUser}>Create a User</button>
+            <Users users={users} deleteAUser={deleteAUser} />
+          </section>
+          <section>
+            <h2>Restaurants ({restaurants.length})</h2>
+            <Restaurants restaurants={restaurants} />
+          </section>
+        </main>
+        <Header toUpperCase={true} />
+      </div>
+    );
 
-start()
+    /*
+    return React.createElement(
+      "div",
+      null,
+      React.createElement("h1", null, "Acme Reservation Planner React"),
+      React.createElement(
+        "main",
+        null,
+        React.createElement(
+          "section",
+          null,
+          React.createElement("h2", null, "Users"),
+          React.createElement('ul', null,
+            users.map(user => {
+              return React.createElement('li', {key: user.id}, user.name)
+            })
+          )
+        ),
+        React.createElement(
+          "section",
+          null,
+          React.createElement("h2", null, "Restaurants"),
+          React.createElement('ul', null,
+            restaurants.map(restaurant => {
+              return React.createElement('li', {key:restaurant.id}, restaurant.name)
+            })
+          )
+        )
+      )
+    );
+    */
+  }
+}
+
+const root = document.querySelector("#root");
+ReactDOM.render(<App />, root);
