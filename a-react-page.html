@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script
+      src="https://unpkg.com/react@18/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+        const foo = {
+            bar: 'bazz',
+            sayHi: function() {
+                console.log(this.bar);
+            }
+        };
+
+        const jonathan = {
+            bar:'lets get ot the bar'
+        };
+
+        foo.sayHi();
+        const hi = foo.sayHi.bind(foo);
+        hi();
+    </script>
+    <script type="text/babel">
+        
+      const root = document.querySelector("#root");
+      ReactDOM.render(<hr/>, root);
+    </script>
+  </body>
+</html>
